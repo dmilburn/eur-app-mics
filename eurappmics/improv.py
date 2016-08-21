@@ -8,7 +8,7 @@ def simple_rhythm(ts = meter.TimeSignature('4/4')):
     tl = ts.totalLength
     basic = [ql*(x+1) for x in range(int(tl/ql))]
     subdivisions = [.25*(x+1) for x in range(int(ql/.25))]
-    triplet = [x/3 for x in basic if x not in basic+subdivisions]
+    triplet = [x/3 for x in basic if x/3 not in basic+subdivisions]
     durations = list(set(basic+subdivisions+triplet))
 
     rhythm = stream.Measure()
@@ -21,6 +21,6 @@ def simple_rhythm(ts = meter.TimeSignature('4/4')):
         else:
             tl -= n.quarterLength
             rhythm.append(n)
-        durations = [d for d in set(basic+subdivisions+triplet)
-                     if tl-d >= 0]
+        durations = [d for d in set(basic+subdivisions) if tl-d >= 0] + \
+                    [d for d in set(triplet) if tl-(d*3) >= 0]
     return rhythm

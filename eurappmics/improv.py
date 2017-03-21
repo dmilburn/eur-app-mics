@@ -2,11 +2,9 @@ from music21 import note, stream, meter, pitch, scale
 import random
 
 def simple():
-    i = 0
     rhythms = stream.Part()
-    while i < 100:
+    for i in range(0,100):
         rhythms.append(simple_rhythm())
-        i += 1
     return simple_melody(rhythms)
 
 def simple_rhythm(ts = meter.TimeSignature('4/4')):

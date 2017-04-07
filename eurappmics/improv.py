@@ -1,11 +1,32 @@
-from music21 import note, stream, meter, pitch, scale
+from music21 import note, stream, meter, pitch, scale, corpus
 import random
+from collections import Counter, defaultdict
 
 def simple():
     rhythms = stream.Part()
     for i in range(0,100):
         rhythms.append(simple_rhythm())
     return simple_melody(rhythms)
+
+
+def generate_rhythm_library(paths=corpus.getBachChorales()):
+    rhythm_library = defaultdict(Counter)
+    for i, path in enumerate(paths):
+        print("Working [{}/{}]: {}".format(i, len(paths), path))
+        piece = corpus.parse(path)
+        current_beat = []
+        current_measure = 0
+        for note in piece.recurse().notesAndRests:
+            ts = note.getContextByClass('TimeSignature')
+            if current_measure != note.measureNumber:
+                current_beat.clear()
+                current_measure = note.measureNumber
+            current_beat.append(note.quarterLength)
+            if sum(current_beat) % ts.beatDuration.quarterLength == 0:
+                rhythm_library[ts.ratioString][tuple(current_beat)] += 1
+                current_beat.clear()
+    return rhythm_library
+
 
 def simple_rhythm(ts = meter.TimeSignature('4/4')):
     ## TODO: Just generate a list of rhythmic vocab and randomly choose from that
